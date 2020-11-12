@@ -16,20 +16,21 @@
 			<el-form-item prop="code">
 				<el-input v-model="user.code" placeholder="请输入验证码" />
 			</el-form-item>
+			<el-form-item prop="agree">
+				<el-checkbox v-model="user.agree"></el-checkbox>
+				我已阅读并同意用户协议和隐私条款
+			</el-form-item>
 			<el-form-item>
 				<el-button class="login-btn" type="primary" @click="onLogin" :loading="loginLoading">登录</el-button>
 			</el-form-item>
-			<el-form-item>
-				<el-checkbox v-model="checked"></el-checkbox>
-				我已阅读并同意用户协议和隐私条款
-			</el-form-item>
+			
 		</el-form>
 	</div>
 </template>
 
 <script>
-	import request from '@/utils/request'
-
+	import { login } from '@/api/user'
+	
 	export default {
 		name: 'LoginIndex',
 		components: {},
@@ -37,10 +38,10 @@
 		data() {
 			return {
 				user: {
-					mobile: '', //手机号
-					code: '' //验证码
+					mobile: '13911111111', //手机号
+					code: '246810', //验证码
+					agree:false //阅读验证
 				},
-				checked: false, //阅读选中状态
 				loginLoading: false, //登录的loading状态
 				formRules: { //表单验证规则配置
 					mobile: [
@@ -66,6 +67,19 @@
 							message:'请输入正确的验证码格式',
 							trigger:'change'
 						}
+					],
+					agree:[
+						{
+							validator:(rule,value,callback) => {
+								if (value) {
+									callback()
+								} else {
+									callback(new Error('请勾选用户协议'))
+								}
+							},
+							trigger:'change'
+						},
+						
 					]
 				}
 			}
@@ -86,17 +100,14 @@
 					}
 					try {
 						this.loginLoading = true
-						const data = await request({
-							method: 'POST',
-							url: '/mp/v1_0/authorizations',
-							data: this.user
-						})
-						console.log(data)
+						const data = await login(this.user)
+						// console.log(data)
 						this.$message({
 							message: '恭喜你,登录成功!',
 							type: 'success'
 						})
 						this.loginLoading = false
+						this.$router.push('/')
 					} catch (err) {
 						console.log('登录失败', err)
 						this.$message.error('登录失败!')
