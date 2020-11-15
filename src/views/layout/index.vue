@@ -1,63 +1,129 @@
 <template>
 	<el-container class="layout-container">
-	  <el-aside class="aside" width="200px">
-		  <app-aside class="aside-menu" />
-	  </el-aside>
-	  <el-container>
-	    <el-header class="header">
-			<i class="el-icon-s-fold"></i>
-		</el-header>
-	    <el-main class="main">
-			<router-view />
-		</el-main>
-	  </el-container>
+		<el-aside class="aside" width="auto">
+			<app-aside class="aside-menu" />
+		</el-aside>
+		<el-container>
+			<el-header class="header">
+				<div class="header-avater">
+					<i class="el-icon-s-fold"></i>
+					<span>小猪热点头条</span>
+				</div>
+				<el-dropdown>
+					<div class="avatar-wrap">
+						<img class="avatar" :src="user.photo" />
+						<span>{{ user.name }}</span>
+						<i class="el-icon-arrow-down el-icon--right"></i>
+					</div>
+					<!-- <span >
+			    下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+			  </span> -->
+					<el-dropdown-menu slot="dropdown">
+						<el-dropdown-item class="setting">个人设置</el-dropdown-item>
+						<el-dropdown-item class="setting">退出</el-dropdown-item>
+					</el-dropdown-menu>
+				</el-dropdown>
+			</el-header>
+			<el-main class="main">
+				<router-view />
+			</el-main>
+		</el-container>
 	</el-container>
-	
-	
+
+
 </template>
 
 <script>
 	import AppAside from './components/aside'
-	
+	import { getUserProfile } from '@/api/user'
+
 	export default {
 		name: 'LayoutIndex',
 		components: {
 			AppAside
 		},
-		props: {},
+		props: {
+			
+		},
 		data() {
-			return {}
+			return {
+				user:{},//用户资料
+				
+			}
 		},
 		computed: {},
 		watch: {},
 		created() {
-
+			this.loadUserProfile()
 		},
 		mounted() {
 
 		},
-		methods: {}
+		methods: {
+			async loadUserProfile(){
+			 	const data = await getUserProfile()
+				this.user = data.data.data
+			},
+			
+		}
 	}
 </script>
 
 <style scoped="scoped" lang="less">
-	.layout-container{
+	.layout-container {
 		position: fixed;
 		left: 0;
 		right: 0;
 		top: 0;
 		bottom: 0;
 	}
-	.aside{
+
+	.aside {
 		background-color: #6A737D;
-		.aside-menu{
+
+		.aside-menu {
 			height: 100%;
 		}
 	}
-	.header{
-		background-color: #999999;
+
+	.header {
+		// background-color: #999999;
+		font-size: 20px;
+		border-bottom: 1px solid #CCCCCC;
+		height: 60px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		justify-content: space-between;
+		.header-avater{
+			display: flex;
+			font-weight: bold;
+			color: #6B8E23;
+			.el-icon-s-fold{
+				font-size: 30px;
+			}
+		}
+		
 	}
-	.main{
+
+	.main {
 		background-color: #CCCCCC;
+	}
+
+	.avatar-wrap {
+		display: flex;
+		align-items: center;
+		font-size: 20px;
+		color: black;
+		font-weight: bold;
+		.avatar {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			margin-right: 10px;
+		}
+	}
+	.setting{
+		font-size: 18px;
 	}
 </style>

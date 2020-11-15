@@ -1,12 +1,7 @@
 <template>
 	<div class="login-container">
 
-		<el-form 
-			class="login-form" 
-			ref="login-form"
-			:model="user" 
-			:rules="formRules"
-		>
+		<el-form class="login-form" ref="login-form" :model="user" :rules="formRules">
 			<div class="login-head">
 				<img src="./news.png" /><span>小猪热点头条</span>
 			</div>
@@ -23,14 +18,16 @@
 			<el-form-item>
 				<el-button class="login-btn" type="primary" @click="onLogin" :loading="loginLoading">登录</el-button>
 			</el-form-item>
-			
+
 		</el-form>
 	</div>
 </template>
 
 <script>
-	import { login } from '@/api/user'
-	
+	import {
+		login
+	} from '@/api/user'
+
 	export default {
 		name: 'LoginIndex',
 		components: {},
@@ -40,46 +37,43 @@
 				user: {
 					mobile: '13911111111', //手机号
 					code: '246810', //验证码
-					agree:false //阅读验证
+					agree: false //阅读验证
 				},
 				loginLoading: false, //登录的loading状态
 				formRules: { //表单验证规则配置
-					mobile: [
-						{
+					mobile: [{
 							required: true,
 							message: '请输入活动名称',
 							trigger: 'change'
 						},
 						{
-							pattern:/^1[3|5|7|8|9]\d{9}$/,
-							message:'请输入正确的手机号码格式',
-							trigger:'change'
+							pattern: /^1[3|5|7|8|9]\d{9}$/,
+							message: '请输入正确的手机号码格式',
+							trigger: 'change'
 						}
 					],
-					code: [
-						{
+					code: [{
 							required: true,
 							message: '请输入验证码',
 							trigger: 'change'
 						},
 						{
-							pattern:/^\d{6}$/,
-							message:'请输入正确的验证码格式',
-							trigger:'change'
+							pattern: /^\d{6}$/,
+							message: '请输入正确的验证码格式',
+							trigger: 'change'
 						}
 					],
-					agree:[
-						{
-							validator:(rule,value,callback) => {
+					agree: [{
+							validator: (rule, value, callback) => {
 								if (value) {
 									callback()
 								} else {
 									callback(new Error('请勾选用户协议'))
 								}
 							},
-							trigger:'change'
+							trigger: 'change'
 						},
-						
+
 					]
 				}
 			}
@@ -95,7 +89,7 @@
 		methods: {
 			onLogin() {
 				this.$refs['login-form'].validate(async valid => {
-					if(!valid){
+					if (!valid) {
 						return
 					}
 					try {
@@ -107,6 +101,7 @@
 							type: 'success'
 						})
 						this.loginLoading = false
+						window.localStorage.setItem('user', JSON.stringify(data.data.data))
 						this.$router.push('/')
 					} catch (err) {
 						console.log('登录失败', err)
@@ -115,7 +110,7 @@
 					}
 				})
 			},
-			
+
 		}
 	}
 </script>
