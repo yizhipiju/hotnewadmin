@@ -40,12 +40,9 @@
 	export default {
 		name: 'AppAside',
 		components: {},
-		props: {
-			
-		},
+		props: ['is-collapse'],
 		data() {
 			return {
-				isCollapse:false
 			}
 		},
 		computed: {},

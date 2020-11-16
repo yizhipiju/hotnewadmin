@@ -1,12 +1,12 @@
 <template>
 	<el-container class="layout-container">
 		<el-aside class="aside" width="auto">
-			<app-aside class="aside-menu" />
+			<app-aside :is-collapse="isCollapse" class="aside-menu" />
 		</el-aside>
 		<el-container>
 			<el-header class="header">
 				<div class="header-avater">
-					<i class="el-icon-s-fold"></i>
+					<i :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'" @click="isCollapse = !isCollapse"></i>
 					<span>小猪热点头条</span>
 				</div>
 				<el-dropdown>
@@ -48,7 +48,7 @@
 		data() {
 			return {
 				user:{},//用户资料
-				
+				isCollapse:false
 			}
 		},
 		computed: {},
@@ -100,6 +100,9 @@
 			font-weight: bold;
 			color: #6B8E23;
 			.el-icon-s-fold{
+				font-size: 30px;
+			}
+			.el-icon-s-unfold{
 				font-size: 30px;
 			}
 		}
