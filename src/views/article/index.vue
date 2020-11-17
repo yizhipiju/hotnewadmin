@@ -11,13 +11,13 @@
 			<!--  -->
 			<el-form ref="form" :model="form" label-width="80px">
 				<el-form-item label="状态">
-					<el-radio-group v-model="form.resource">
-						<el-radio label="全部"></el-radio>
-						<el-radio label="草稿"></el-radio>
-						<el-radio label="待审核"></el-radio>
-						<el-radio label="审核通过"></el-radio>
-						<el-radio label="审核失败"></el-radio>
-						<el-radio label="已删除"></el-radio>
+					<el-radio-group v-model="status">
+						<el-radio :label="null">全部</el-radio>
+						<el-radio :label="0">草稿</el-radio>
+						<el-radio :label="1">待审核</el-radio>
+						<el-radio :label="2">审核通过</el-radio>
+						<el-radio :label="3">审核失败</el-radio>
+						<el-radio :label="4">已删除</el-radio>
 					</el-radio-group>
 				</el-form-item>
 				<el-form-item label="频道">
@@ -34,7 +34,7 @@
 				</el-form-item>
 
 				<el-form-item>
-					<el-button type="primary" @click="onSubmit">查询</el-button>
+					<el-button type="primary" @click="loadArticles(1)">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-card>
@@ -75,7 +75,13 @@
 
 
 			<!--  -->
-			<el-pagination background layout="prev, pager, next" :total="1000">
+			<el-pagination 
+				background 
+				layout="prev, pager, next" 
+				:total="totalCount"
+				:page-size="pageSize"
+				@current-change="onCurrentChange"
+			>
 			</el-pagination>
 		</el-card>
 
@@ -110,7 +116,10 @@
 					{ status: 2, text:'审核通过', type: 'success' },
 					{ status: 3, text:'审核失败', type: 'danger' },
 					{ status: 4, text:'已删除', type: 'info' }
-				]
+				],
+				totalCount:0,
+				pageSize:10,
+				status:null
 			}
 		},
 		computed: {},
@@ -125,11 +134,18 @@
 			onSubmit() {
 				console.log('submit!');
 			},
-			async loadArticles() {
-				const {
-					data
-				} = await getArticles()
+			async loadArticles(page = 1) {
+				const { data } = await getArticles({
+					page,
+					per_page:this.pageSize,
+					status:this.status
+				})
+				console.log(data)
 				this.articles = data.data.results
+				this.totalCount = data.data.total_count
+			},
+			onCurrentChange(page){
+				this.loadArticles(page)
 			}
 		}
 	}

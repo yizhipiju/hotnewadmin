@@ -82,7 +82,6 @@
 
 	.nav-menu {
 		padding: 8px;
-
 		.iconfont {
 			margin-right: 5px;
 			padding-left: 3px;

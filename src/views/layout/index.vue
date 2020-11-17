@@ -59,7 +59,7 @@
 			this.loadUserProfile()
 		},
 		mounted() {
-
+			
 		},
 		methods: {
 			async loadUserProfile() {
@@ -98,7 +98,6 @@
 
 	.aside {
 		background-color: #6A737D;
-
 		.aside-menu {
 			height: 100%;
 		}
