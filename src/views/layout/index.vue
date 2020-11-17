@@ -20,7 +20,7 @@
 			  </span> -->
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item class="setting">个人设置</el-dropdown-item>
-						<el-dropdown-item class="setting">退出</el-dropdown-item>
+						<el-dropdown-item class="setting" @click.native="onLogout">退出</el-dropdown-item>
 					</el-dropdown-menu>
 				</el-dropdown>
 			</el-header>
@@ -35,7 +35,9 @@
 
 <script>
 	import AppAside from './components/aside'
-	import { getUserProfile } from '@/api/user'
+	import {
+		getUserProfile
+	} from '@/api/user'
 
 	export default {
 		name: 'LayoutIndex',
@@ -43,12 +45,12 @@
 			AppAside
 		},
 		props: {
-			
+
 		},
 		data() {
 			return {
-				user:{},//用户资料
-				isCollapse:false
+				user: {}, //用户资料
+				isCollapse: false
 			}
 		},
 		computed: {},
@@ -60,11 +62,27 @@
 
 		},
 		methods: {
-			async loadUserProfile(){
-			 	const data = await getUserProfile()
+			async loadUserProfile() {
+				const data = await getUserProfile()
 				this.user = data.data.data
 			},
-			
+			onLogout() {
+				this.$confirm('确认退出吗?', '退出提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					window.localStorage.removeItem('user')
+					this.$router.push('/login')
+				}).catch(() => {
+					// this.$message({
+					// 	type: 'info',
+					// 	message: '已取消删除'
+					// })
+				})
+				
+			}
+
 		}
 	}
 </script>
@@ -95,18 +113,21 @@
 		justify-content: center;
 		align-items: center;
 		justify-content: space-between;
-		.header-avater{
+
+		.header-avater {
 			display: flex;
 			font-weight: bold;
 			color: #6B8E23;
-			.el-icon-s-fold{
+
+			.el-icon-s-fold {
 				font-size: 30px;
 			}
-			.el-icon-s-unfold{
+
+			.el-icon-s-unfold {
 				font-size: 30px;
 			}
 		}
-		
+
 	}
 
 	.main {
@@ -119,6 +140,7 @@
 		font-size: 20px;
 		color: black;
 		font-weight: bold;
+
 		.avatar {
 			width: 40px;
 			height: 40px;
@@ -126,7 +148,8 @@
 			margin-right: 10px;
 		}
 	}
-	.setting{
+
+	.setting {
 		font-size: 18px;
 	}
 </style>

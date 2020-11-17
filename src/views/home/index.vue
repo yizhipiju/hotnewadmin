@@ -1,6 +1,6 @@
 <template>
 	<div class="home-container">
-		首页
+		<img src="./shouye.jpg" />
 	</div>
 </template>
 
@@ -25,4 +25,13 @@
 </script>
 
 <style scoped="scoped" lang="less">
+	.home-container{
+		position: fixed;
+		top: 60px;
+		margin-left: -20px;
+		img{
+			width: 100%;
+			// background-size: cover;
+		}
+	}
 </style>
