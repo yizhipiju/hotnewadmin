@@ -3,7 +3,7 @@
 
 		<el-card class="filter-card">
 			<div slot="header" class="clearfix">
-				<el-breadcrumb separator-class="el-icon-arrow-right">
+				<el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumbcantaniner">
 					<el-breadcrumb-item to="/">首页</el-breadcrumb-item>
 					<el-breadcrumb-item>内容管理</el-breadcrumb-item>
 				</el-breadcrumb>
@@ -21,31 +21,46 @@
 					</el-radio-group>
 				</el-form-item>
 				<el-form-item label="频道">
-					<el-select v-model="form.region" placeholder="请选择频道">
-						<el-option label="区域一" value="shanghai"></el-option>
-						<el-option label="区域二" value="beijing"></el-option>
+					<el-select v-model="channelId" placeholder="请选择频道">
+						<el-option
+							label="全部" 
+							:value="null"
+						></el-option>
+						<el-option 
+							:label="channels.name" 
+							:value="channels.id"
+							v-for="(channels,index) in channels"
+							:key="index"
+						></el-option>
 					</el-select>
 				</el-form-item>
 
 				<el-form-item label="日期">
-					<el-date-picker v-model="form.date1" type="datetimerange" start-placeholder="开始日期" end-placeholder="结束日期"
-					 :default-time="['12:00:00']">
+					<el-date-picker 
+						v-model="rangeDate" 
+						type="datetimerange" 
+						start-placeholder="开始日期" 
+						end-placeholder="结束日期"
+						:default-time="['12:00:00']"
+						format="yyyy-MM-dd"
+						value-format="yyyy-MM-dd"
+					>
 					</el-date-picker>
 				</el-form-item>
 
 				<el-form-item>
-					<el-button type="primary" @click="loadArticles(1)">查询</el-button>
+					<el-button type="primary" @click="loadArticles(1)" :disabled="loading">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-card>
 
 		<el-card class="box-card">
 			<div slot="header" class="clearfix">
-				根据筛选条件查询到 3432 条结果
+				根据筛选条件查询到 {{totalCount}} 条结果
 			</div>
 
 			<!--  -->
-			<el-table :data="articles" style="width: 100%" stripe border class="list-table">
+			<el-table :data="articles" style="width: 100%" stripe border class="list-table" v-loading="loading">
 				<el-table-column prop="date" label="封面">
 					<template slot-scope="scope">
 						<img v-if="scope.row.cover.images[0]" class="article-cover" :src="scope.row.cover.images[0]" />
@@ -68,7 +83,7 @@
 				<el-table-column prop="address" label="操作">
 					<template slot-scope="scope">
 						<el-button size="mini" circle type="primary" icon="el-icon-edit"></el-button>
-						<el-button size="mini" type="danger" circle icon="el-icon-delete"></el-button>
+						<el-button size="mini" type="danger" circle icon="el-icon-delete" @click="onDeleteArticle(scope.row.id)"></el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -81,6 +96,7 @@
 				:total="totalCount"
 				:page-size="pageSize"
 				@current-change="onCurrentChange"
+				:disabled="loading"
 			>
 			</el-pagination>
 		</el-card>
@@ -89,9 +105,7 @@
 </template>
 
 <script>
-	import {
-		getArticles
-	} from '@/api/article'
+	import {getArticles,getArticleChannels,deleteArticle} from '@/api/article'
 
 	export default {
 		name: 'ArticleIndex',
@@ -119,13 +133,18 @@
 				],
 				totalCount:0,
 				pageSize:10,
-				status:null
+				status:null,
+				channels:[],
+				channelId:null,
+				rangeDate:null,
+				loading:true
 			}
 		},
 		computed: {},
 		watch: {},
 		created() {
-			this.loadArticles()
+			this.loadArticles(1)
+			this.loadChannels()
 		},
 		mounted() {
 
@@ -135,17 +154,44 @@
 				console.log('submit!');
 			},
 			async loadArticles(page = 1) {
+				this.loading = true
 				const { data } = await getArticles({
 					page,
 					per_page:this.pageSize,
-					status:this.status
+					status:this.status,
+					channel_id:this.channelId,
+					begin_pubdate:this.rangeDate ? this.rangeDate[0] : null,
+					end_pubdate:this.rangeDate ? this.rangeDate[1] : null
 				})
 				console.log(data)
 				this.articles = data.data.results
 				this.totalCount = data.data.total_count
+				this.loading = false
 			},
 			onCurrentChange(page){
 				this.loadArticles(page)
+			},
+			async loadChannels(){
+				const { data } = await getArticleChannels()
+				// console.log(data)
+				this.channels = data.data.channels
+			},
+			onDeleteArticle(articleId){
+				this.$confirm('确认删除吗?', '删除提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					deleteArticle(articleId.toString()).then(res=>{
+						console.log(res)
+					})
+				}).catch(() => {
+					// this.$message({
+					// 	type: 'info',
+					// 	message: '已取消删除'
+					// })
+				})
+				
 			}
 		}
 	}
@@ -163,4 +209,11 @@
 		width: 80px;
 		background-size: cover;
 	}
+	.clearfix{
+		font-size: 22px;
+	}
+	.breadcrumbcantaniner{
+		font-size: 22px;
+	}
+
 </style>
