@@ -97,6 +97,7 @@
 				:page-size="pageSize"
 				@current-change="onCurrentChange"
 				:disabled="loading"
+				:current-page.sync="page"
 			>
 			</el-pagination>
 		</el-card>
@@ -137,7 +138,8 @@
 				channels:[],
 				channelId:null,
 				rangeDate:null,
-				loading:true
+				loading:true,
+				page:1
 			}
 		},
 		computed: {},
@@ -177,13 +179,16 @@
 				this.channels = data.data.channels
 			},
 			onDeleteArticle(articleId){
+				// console.log(articleId)
+				// console.log(articleId.toString())
 				this.$confirm('确认删除吗?', '删除提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
 					deleteArticle(articleId.toString()).then(res=>{
-						console.log(res)
+						// console.log(res)
+						this.loadArticles(this.page)
 					})
 				}).catch(() => {
 					// this.$message({
