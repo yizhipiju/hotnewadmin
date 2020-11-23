@@ -8,43 +8,31 @@
 		    </el-breadcrumb>
 		  </div>
 		  <!--  -->
-		  <el-form ref="form" :model="form" label-width="80px">
-		    <el-form-item label="活动名称">
-		      <el-input v-model="form.name"></el-input>
+		  <el-form ref="form" :model="article" label-width="80px">
+		    <el-form-item label="标题">
+		      <el-input v-model="article.title"></el-input>
 		    </el-form-item>
-		    <el-form-item label="活动区域">
-		      <el-select v-model="form.region" placeholder="请选择活动区域">
-		        <el-option label="区域一" value="shanghai"></el-option>
-		        <el-option label="区域二" value="beijing"></el-option>
-		      </el-select>
-		    </el-form-item>
-		    <el-form-item label="活动时间">
-		      <el-col :span="11">
-		        <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-		      </el-col>
-		      <el-col class="line" :span="2">-</el-col>
-		      <el-col :span="11">
-		        <el-time-picker placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-		      </el-col>
-		    </el-form-item>
-		    <el-form-item label="即时配送">
-		      <el-switch v-model="form.delivery"></el-switch>
-		    </el-form-item>
-		    <el-form-item label="活动性质">
-		      <el-checkbox-group v-model="form.type">
-		        <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-		        <el-checkbox label="地推活动" name="type"></el-checkbox>
-		        <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-		        <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-		      </el-checkbox-group>
-		    </el-form-item>
-		    <el-form-item label="特殊资源">
-		      <el-radio-group v-model="form.resource">
-		        <el-radio label="线上品牌商赞助"></el-radio>
-		        <el-radio label="线下场地免费"></el-radio>
+			<el-form-item label="内容">
+			  <el-input type="textarea" v-model="article.content"></el-input>
+			</el-form-item>
+		    <el-form-item label="封面">
+		      <el-radio-group v-model="article.cover.type">
+		        <el-radio :label="1">单图</el-radio>
+		        <el-radio :label="3">三图</el-radio>
+		        <el-radio :label="0">无图</el-radio>
+		        <el-radio :label="-1">自动</el-radio>
 		      </el-radio-group>
 		    </el-form-item>
-		    
+		    <el-form-item label="频道">
+		      <el-select v-model="article.channel_id" placeholder="请选择频道">
+		        <el-option v-for="(channel,index) in channels" :key="index" 
+				:label="channel.name" :value="channel.id"></el-option>
+		      </el-select>
+		    </el-form-item>
+			<el-form-item>
+			    <el-button type="primary" @click="onSubmit">发布</el-button>
+			    <el-button>存入草稿</el-button>
+			  </el-form-item>
 		  </el-form>
 		  <!--  -->
 		</el-card>
@@ -52,6 +40,8 @@
 </template>
 
 <script>
+	import { getArticleChannels } from '@/api/article'
+	
 	export default{
 		name:'PublishIndex',
 		components:{
@@ -60,22 +50,23 @@
 		props:{},
 		data(){
 			return{
-				form: {
-					  name: '',
-					  region: '',
-					  date1: '',
-					  date2: '',
-					  delivery: false,
-					  type: [],
-					  resource: '',
-					  desc: ''
-				}
+				
+				article:{
+					title:'',//文章标题
+					content:'',//文章内容
+					cover:{//文章封面
+						type:0,//封面类型  -1:自动 0:无图  1:一张 3:三张
+						images:[]//封面图片地址
+					},
+					channel_id:null
+				},
+				channels:[]//文章频道列表
 			}
 		},
 		computed:{},
 		watch:{},
 		created() {
-			
+			this.loadChannels()
 		},
 		mounted() {
 			
@@ -83,10 +74,25 @@
 		methods:{
 			onSubmit() {
 			        console.log('submit!');
-			      }
+			},
+			async loadChannels(){
+				const { data } =  await getArticleChannels()
+				this.channels = data.data.channels
+			}
 		}
 	}
 </script>
 
 <style scoped="scoped" lang="less">
+	.form-oneImage{
+		width: 130px;
+		height: 130px;
+		border: 1px solid;
+		
+	}
+	.form-threeImage{
+		width: 130px;
+		height: 130px;
+		border: 1px solid;
+	}
 </style>
