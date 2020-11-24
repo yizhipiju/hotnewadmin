@@ -30,7 +30,7 @@
 		      </el-select>
 		    </el-form-item>
 			<el-form-item>
-			    <el-button type="primary" @click="onSubmit">发布</el-button>
+			    <el-button type="primary" @click="onPublish">发布</el-button>
 			    <el-button>存入草稿</el-button>
 			  </el-form-item>
 		  </el-form>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-	import { getArticleChannels } from '@/api/article'
+	import { getArticleChannels,addArticle } from '@/api/article'
 	
 	export default{
 		name:'PublishIndex',
@@ -50,7 +50,6 @@
 		props:{},
 		data(){
 			return{
-				
 				article:{
 					title:'',//文章标题
 					content:'',//文章内容
@@ -72,8 +71,14 @@
 			
 		},
 		methods:{
-			onSubmit() {
-			        console.log('submit!');
+			// async onPublish() {
+			// 	const { data } = await addArticle(this.article)
+			// 	console.log(data)
+			// },
+			onPublish(){
+				addArticle(this.article).then(res=>{
+					console.log(res)
+				})
 			},
 			async loadChannels(){
 				const { data } =  await getArticleChannels()
@@ -82,13 +87,11 @@
 		}
 	}
 </script>
-
 <style scoped="scoped" lang="less">
 	.form-oneImage{
 		width: 130px;
 		height: 130px;
 		border: 1px solid;
-		
 	}
 	.form-threeImage{
 		width: 130px;

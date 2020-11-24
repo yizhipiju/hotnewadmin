@@ -42,4 +42,5 @@ export const addArticle = (data,draft = false) => {
 			draft //是否存为草稿
 		},
 		data
+	})
 }
