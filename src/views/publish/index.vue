@@ -30,8 +30,8 @@
 		      </el-select>
 		    </el-form-item>
 			<el-form-item>
-			    <el-button type="primary" @click="onPublish">发布</el-button>
-			    <el-button>存入草稿</el-button>
+			    <el-button type="primary" @click="onPublish(false)">发布</el-button>
+			    <el-button @click="onPublish(true)">存入草稿</el-button>
 			  </el-form-item>
 		  </el-form>
 		  <!--  -->
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-	import { getArticleChannels,addArticle } from '@/api/article'
+	import { getArticleChannels, addArticle, getArticle, updateArticle} from '@/api/article'
 	
 	export default{
 		name:'PublishIndex',
@@ -50,6 +50,7 @@
 		props:{},
 		data(){
 			return{
+				channels:[],//文章频道列表
 				article:{
 					title:'',//文章标题
 					content:'',//文章内容
@@ -59,13 +60,15 @@
 					},
 					channel_id:null
 				},
-				channels:[]//文章频道列表
 			}
 		},
 		computed:{},
 		watch:{},
 		created() {
 			this.loadChannels()
+			if(this.$route.query.id){
+				this.loadArticle()
+			}
 		},
 		mounted() {
 			
@@ -75,14 +78,37 @@
 			// 	const { data } = await addArticle(this.article)
 			// 	console.log(data)
 			// },
-			onPublish(){
-				addArticle(this.article).then(res=>{
-					console.log(res)
-				})
-			},
 			async loadChannels(){
 				const { data } =  await getArticleChannels()
 				this.channels = data.data.channels
+			},
+			onPublish(draft = false){
+					const articleId = this.$route.query.id
+					if(articleId){
+						updateArticle(articleId,this.article,draft).then(res=>{
+							this.$message({
+								message:`${draft ? '存入草稿' : '修改'}成功`,
+								type:'success'
+							})
+						})
+					}else{
+						addArticle(this.article, draft).then(res=>{
+							console.log(res)
+							this.$message({
+								message: `${draft ? '存入草稿' : '发布'}成功`,
+								type:'success'
+							})
+							this.$router.push('/article')
+				
+				        })
+					}
+			},
+			loadArticle(){
+				getArticle(this.$route.query.id).then(res=>{
+					console.log(res)
+					console.log('nihao')
+					// this.article = res.data.data
+				})
 			}
 		}
 	}
