@@ -13,7 +13,8 @@
 		      <el-input v-model="article.title"></el-input>
 		    </el-form-item>
 			<el-form-item label="内容">
-			  <el-input type="textarea" v-model="article.content"></el-input>
+			  <!-- <el-input type="textarea" v-model="article.content"></el-input> -->
+			  <el-tiptap v-model="article.content" :extensions="extensions"></el-tiptap>
 			</el-form-item>
 		    <el-form-item label="封面">
 		      <el-radio-group v-model="article.cover.type">
@@ -41,11 +42,23 @@
 
 <script>
 	import { getArticleChannels, addArticle, getArticle, updateArticle} from '@/api/article'
-	
+	import { ElementTiptap,
+	   Doc,
+	   Text,
+	   Paragraph,
+	   Heading,
+	   Bold,
+	   Underline,
+	   Italic,
+	   Strike,
+	   ListItem,
+	   BulletList,
+	   OrderedList
+	} from 'element-tiptap'
 	export default{
 		name:'PublishIndex',
 		components:{
-			
+			'el-tiptap': ElementTiptap
 		},
 		props:{},
 		data(){
@@ -60,6 +73,19 @@
 					},
 					channel_id:null
 				},
+			    extensions: [
+			    	new Doc(),
+					new Text(),
+					new Paragraph(),
+					new Heading({ level: 5 }),
+					new Bold({ bubble: true }), // render command-button in bubble menu.
+					new Underline({ bubble: true, menubar: false }), // render command-button in bubble menu but not in menubar.
+					new Italic(),
+					new Strike(),
+					new ListItem(),
+					new BulletList(),
+					new OrderedList(),	    								
+			    ],
 			}
 		},
 		computed:{},
